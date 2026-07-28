@@ -38,3 +38,7 @@ export async function appendEvent(event: AnalyticsEvent): Promise<void> {
   await browser.storage.local.set({ [eventsKey]: [...events, event].slice(-200) });
 }
 
+export async function getEvents(): Promise<AnalyticsEvent[]> {
+  const stored = await browser.storage.local.get(eventsKey);
+  return (stored[eventsKey] as AnalyticsEvent[] | undefined) ?? [];
+}

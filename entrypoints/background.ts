@@ -3,6 +3,7 @@ import { findGame } from '@/src/games';
 import type { RuntimeMessage } from '@/src/messages';
 import {
   appendEvent,
+  getEvents,
   getSession,
   getSettings,
   saveSession,
@@ -41,6 +42,17 @@ async function reachThreshold(): Promise<void> {
   await record('threshold_reached', session);
 }
 
+async function restoreWaitingSession(): Promise<void> {
+  const session = await getSession();
+  if (!session || session.status !== 'waiting') return;
+  const dueAt = session.startedAt + session.thresholdSeconds * 1000;
+  if (Date.now() >= dueAt) {
+    await reachThreshold();
+    return;
+  }
+  await browser.alarms.create(thresholdAlarm, { when: dueAt });
+}
+
 async function startWait(): Promise<void> {
   const [activeTab] = await browser.tabs.query({ active: true, currentWindow: true });
   if (!activeTab?.id) throw new Error('找不到当前标签页。');
@@ -59,22 +71,28 @@ async function startWait(): Promise<void> {
   await record('wait_started', session);
 }
 
-async function endWait(): Promise<void> {
+async function endWait(): Promise<{ notificationSent: boolean }> {
   const session = await getSession();
   await browser.alarms.clear(thresholdAlarm);
-  if (!session) return;
+  if (!session) return { notificationSent: false };
   await saveSession({ ...session, status: 'ended' });
   await record('wait_ended', session);
-  await browser.notifications.create(completionNotification, {
-    type: 'basic',
-    iconUrl: browser.runtime.getURL('/icon.svg'),
-    title: 'AI 任务可能已完成',
-    message: '点击“回到任务”继续处理原标签页。',
-    buttons: [{ title: '回到任务' }],
-  });
+  try {
+    await browser.notifications.create(completionNotification, {
+      type: 'basic',
+      iconUrl: browser.runtime.getURL('/icon.svg'),
+      title: 'AI 任务可能已完成',
+      message: '点击“回到任务”继续处理原标签页。',
+      buttons: [{ title: '回到任务' }],
+    });
+    return { notificationSent: true };
+  } catch {
+    return { notificationSent: false };
+  }
 }
 
 async function dashboard() {
+  await restoreWaitingSession();
   return { session: await getSession(), settings: await getSettings() };
 }
 
@@ -82,7 +100,10 @@ async function handleMessage(message: RuntimeMessage) {
   switch (message.type) {
     case 'get_dashboard': return dashboard();
     case 'start_wait': await startWait(); return dashboard();
-    case 'end_wait': await endWait(); return dashboard();
+    case 'end_wait': {
+      const completion = await endWait();
+      return { ...(await dashboard()), ...completion };
+    }
     case 'record_card_shown': {
       const session = await getSession();
       if (session) await record('card_shown', session);
@@ -99,9 +120,14 @@ async function handleMessage(message: RuntimeMessage) {
     case 'open_game': {
       const session = await getSession();
       if (!findGame(message.gameId)) throw new Error('该游戏不可用。');
-      await browser.tabs.create({ url: browser.runtime.getURL(`/game.html?gameId=${message.gameId}`), active: true });
-      if (session) await record('game_opened', session);
-      return dashboard();
+      try {
+        await browser.tabs.create({ url: browser.runtime.getURL(`/game.html?gameId=${message.gameId}`), active: true });
+        if (session) await record('game_opened', session);
+        return dashboard();
+      } catch {
+        if (session) await record('game_load_failed', session);
+        throw new Error('游戏页无法打开，请返回任务或稍后重试。');
+      }
     }
     case 'return_to_task': {
       const session = await getSession();
@@ -110,6 +136,7 @@ async function handleMessage(message: RuntimeMessage) {
     }
     case 'save_settings': await saveSettings(message.settings as Settings); return dashboard();
     case 'clear_local_data': await browser.storage.local.clear(); return dashboard();
+    case 'get_local_events': return getEvents();
   }
 }
 
@@ -124,4 +151,6 @@ export default defineBackground(() => {
     if (notificationId === completionNotification) void getSession().then(focusOriginalTab);
   });
   browser.runtime.onMessage.addListener((message) => handleMessage(message as RuntimeMessage));
+  browser.runtime.onStartup.addListener(() => { void restoreWaitingSession(); });
+  void restoreWaitingSession();
 });

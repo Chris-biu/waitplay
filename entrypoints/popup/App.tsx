@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { placeholderGames } from '@/src/games';
-import type { Settings, WaitSession } from '@/src/types';
+import type { AnalyticsEvent, Settings, WaitSession } from '@/src/types';
 import './style.css';
 
 interface Dashboard {
@@ -25,6 +25,7 @@ function elapsedLabel(session?: WaitSession): string {
 export function App() {
   const [dashboard, setDashboard] = useState<Dashboard>(defaultDashboard);
   const [notice, setNotice] = useState('');
+  const [events, setEvents] = useState<AnalyticsEvent[]>([]);
   const session = dashboard.session;
 
   const refresh = () => send({ type: 'get_dashboard' }).then(setDashboard);
@@ -44,6 +45,11 @@ export function App() {
     } catch (error) {
       setNotice(error instanceof Error ? error.message : '操作失败，请重试。');
     }
+  }
+
+  async function showLocalEvents() {
+    const result = await browser.runtime.sendMessage({ type: 'get_local_events' }) as AnalyticsEvent[];
+    setEvents(result);
   }
 
   async function updateSettings(next: Settings) {
@@ -66,7 +72,7 @@ export function App() {
             开始等待
           </button>
         ) : (
-          <button className="primary" onClick={() => void act({ type: 'end_wait' }, '已发送返回任务通知。')}>
+          <button className="primary" onClick={() => void act({ type: 'end_wait' }, '等待已结束；如通知不可用，请直接返回原任务标签页。')}>
             结束等待
           </button>
         )}
@@ -108,6 +114,8 @@ export function App() {
         <label className="check"><input type="checkbox" checked={dashboard.settings.recommendationsEnabled} onChange={(event) => void updateSettings({ ...dashboard.settings, recommendationsEnabled: event.target.checked })} /> 启用游戏推荐</label>
         <label className="check"><input type="checkbox" checked={dashboard.settings.analyticsEnabled} onChange={(event) => void updateSettings({ ...dashboard.settings, analyticsEnabled: event.target.checked })} /> 启用匿名体验分析（仅本地）</label>
         <button className="link" onClick={() => void act({ type: 'clear_local_data' }, '本地数据已清除。')}>清除本地数据</button>
+        <button className="link" onClick={() => void showLocalEvents()}>查看本地事件</button>
+        {events.length > 0 && <output className="event-output">仅本地：{events.map((event) => event.name).join('、')}</output>}
       </section>
       {notice && <p className="notice" role="status">{notice}</p>}
     </main>

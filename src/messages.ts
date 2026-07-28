@@ -9,5 +9,5 @@ export type RuntimeMessage =
   | { type: 'record_card_shown' }
   | { type: 'disable_recommendations' }
   | { type: 'save_settings'; settings: Settings }
-  | { type: 'clear_local_data' };
-
+  | { type: 'clear_local_data' }
+  | { type: 'get_local_events' };
