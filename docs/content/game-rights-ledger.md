@@ -4,7 +4,7 @@
 
 | 候选游戏 | 来源与许可证证据 | 网页分发/嵌入/修改/商用 | 依赖与素材风险 | 适龄与地区 | 加载、暂停与退出 | 负责人/核验日期 | 结论 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 2048 | 仓库：https://github.com/gabrielecirulli/2048 ；许可证：[MIT](https://github.com/gabrielecirulli/2048/blob/master/LICENSE.txt)（证据 SHA：`b0dbfa4d7526587bcc21a4883222b20805d5c065`）；官网：https://play2048.co | MIT 仅是源码许可证线索；须人工确认目标版本、署名和许可证副本要求，且不得推断官网可嵌入或可分发 | 字体、音乐、图块素材和官网部署版本待逐项核验 | 待查 | 待在目标 Chrome 实测 | 未指定 / 2026-07-28（初步调研） | 待人工核验（未接入） |
+| 2048 | 仓库：https://github.com/gabrielecirulli/2048 ；许可证：[MIT](https://github.com/gabrielecirulli/2048/blob/master/LICENSE.txt)（证据 SHA：`b0dbfa4d7526587bcc21a4883222b20805d5c065`）；官网：https://play2048.co；审查记录：[`2048-review.md`](2048-review.md) | MIT 仅是源码许可证线索；须人工确认目标版本、署名和许可证副本要求，且不得推断官网可嵌入或可分发 | Clear Sans 字体、图标、官网部署版本及外部跳转待逐项核验 | 待查 | 待在目标 Chrome 实测 | 未指定 / 2026-07-28（自动证据整理） | 优先候选；待人工核验（未接入） |
 | Flexbox Froggy | 仓库：https://github.com/thomaspark/flexboxfroggy ；许可证：[MIT](https://github.com/thomaspark/flexboxfroggy/blob/main/LICENSE)（证据 SHA：`7b30748510cde28e5468368a9240af8d774dff5b`）；官网：https://flexboxfroggy.com | MIT 仅是源码许可证线索；须人工确认目标版本、署名和许可证副本要求，且不得推断官网可嵌入或可分发 | 插图、字体、课程文案、外部资源和官网部署版本待逐项核验 | 待查 | 待在目标 Chrome 实测 | 未指定 / 2026-07-28（初步调研） | 待人工核验（未接入） |
 | Grid Garden | 仓库：https://github.com/thomaspark/gridgarden ；许可证：[MIT](https://github.com/thomaspark/gridgarden/blob/master/LICENSE)（证据 SHA：`ed3b4f750f14d45d1b9d521abbd743aafbac2027`）；官网：https://cssgridgarden.com | MIT 仅是源码许可证线索；须人工确认目标版本、署名和许可证副本要求，且不得推断官网可嵌入或可分发 | 插图、字体、课程文案、外部资源和官网部署版本待逐项核验 | 待查 | 待在目标 Chrome 实测 | 未指定 / 2026-07-28（初步调研） | 待人工核验（未接入） |
 
