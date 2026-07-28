@@ -3,9 +3,11 @@ import { findGame } from '@/src/games';
 import type { RuntimeMessage } from '@/src/messages';
 import {
   appendEvent,
+  getDeepSeekDetection,
   getEvents,
   getSession,
   getSettings,
+  saveDeepSeekDetection,
   saveSession,
   saveSettings,
 } from '@/src/storage';
@@ -93,7 +95,11 @@ async function endWait(): Promise<{ notificationSent: boolean }> {
 
 async function dashboard() {
   await restoreWaitingSession();
-  return { session: await getSession(), settings: await getSettings() };
+  return {
+    session: await getSession(),
+    settings: await getSettings(),
+    deepSeekDetection: await getDeepSeekDetection(),
+  };
 }
 
 async function handleMessage(message: RuntimeMessage) {
@@ -137,6 +143,9 @@ async function handleMessage(message: RuntimeMessage) {
     case 'save_settings': await saveSettings(message.settings as Settings); return dashboard();
     case 'clear_local_data': await browser.storage.local.clear(); return dashboard();
     case 'get_local_events': return getEvents();
+    case 'deepseek_state_observed':
+      await saveDeepSeekDetection({ state: message.state, observedAt: message.observedAt });
+      return dashboard();
   }
 }
 

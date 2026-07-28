@@ -32,6 +32,13 @@ export interface AnalyticsEvent {
   sessionId?: string;
 }
 
+export type AiTaskState = 'generating' | 'completed' | 'needs_user' | 'unknown';
+
+export interface AiDetection {
+  state: AiTaskState;
+  observedAt: number;
+}
+
 export interface Game {
   id: string;
   name: string;
@@ -40,4 +47,3 @@ export interface Game {
   pausable: boolean;
   exitHint: string;
 }
-

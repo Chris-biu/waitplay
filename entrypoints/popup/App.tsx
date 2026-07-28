@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { placeholderGames } from '@/src/games';
-import type { AnalyticsEvent, Settings, WaitSession } from '@/src/types';
+import type { AiDetection, AnalyticsEvent, Settings, WaitSession } from '@/src/types';
 import './style.css';
 
 interface Dashboard {
   session?: WaitSession;
   settings: Settings;
+  deepSeekDetection?: AiDetection;
 }
 
 const defaultDashboard: Dashboard = {
@@ -116,6 +117,11 @@ export function App() {
         <button className="link" onClick={() => void act({ type: 'clear_local_data' }, '本地数据已清除。')}>清除本地数据</button>
         <button className="link" onClick={() => void showLocalEvents()}>查看本地事件</button>
         {events.length > 0 && <output className="event-output">仅本地：{events.map((event) => event.name).join('、')}</output>}
+      </section>
+      <section className="settings" aria-label="DeepSeek Beta 状态">
+        <h2>DeepSeek Beta</h2>
+        <p>仅在 chat.deepseek.com 观察页面控件状态：{dashboard.deepSeekDetection?.state ?? 'unknown'}。</p>
+        <p>此隔离 PoC 不读取对话内容，也不会自动开启游戏或结束等待。</p>
       </section>
       {notice && <p className="notice" role="status">{notice}</p>}
     </main>

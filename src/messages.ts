@@ -1,4 +1,4 @@
-import type { Settings } from './types';
+import type { AiTaskState, Settings } from './types';
 
 export type RuntimeMessage =
   | { type: 'get_dashboard' }
@@ -10,4 +10,5 @@ export type RuntimeMessage =
   | { type: 'disable_recommendations' }
   | { type: 'save_settings'; settings: Settings }
   | { type: 'clear_local_data' }
-  | { type: 'get_local_events' };
+  | { type: 'get_local_events' }
+  | { type: 'deepseek_state_observed'; state: AiTaskState; observedAt: number };

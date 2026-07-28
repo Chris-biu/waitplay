@@ -1,8 +1,9 @@
-import type { AnalyticsEvent, Settings, WaitSession } from './types';
+import type { AiDetection, AnalyticsEvent, Settings, WaitSession } from './types';
 
 const settingsKey = 'settings';
 const sessionKey = 'session';
 const eventsKey = 'events';
+const deepSeekDetectionKey = 'deepseek-detection';
 
 export const defaultSettings: Settings = {
   thresholdSeconds: 90,
@@ -41,4 +42,13 @@ export async function appendEvent(event: AnalyticsEvent): Promise<void> {
 export async function getEvents(): Promise<AnalyticsEvent[]> {
   const stored = await browser.storage.local.get(eventsKey);
   return (stored[eventsKey] as AnalyticsEvent[] | undefined) ?? [];
+}
+
+export async function getDeepSeekDetection(): Promise<AiDetection | undefined> {
+  const stored = await browser.storage.local.get(deepSeekDetectionKey);
+  return stored[deepSeekDetectionKey] as AiDetection | undefined;
+}
+
+export async function saveDeepSeekDetection(detection: AiDetection): Promise<void> {
+  await browser.storage.local.set({ [deepSeekDetectionKey]: detection });
 }
