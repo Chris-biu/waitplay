@@ -10,7 +10,7 @@ export interface WaitSession {
   id: string;
   originalTabId: number;
   startedAt: number;
-  thresholdSeconds: number;
+  thresholdSeconds: Settings['thresholdSeconds'];
   status: WaitStatus;
   recommendationDisabled: boolean;
 }
@@ -43,7 +43,15 @@ export interface Game {
   id: string;
   name: string;
   durationLabel: string;
+  suggestedDurationSeconds: number;
   tags: string[];
   pausable: boolean;
   exitHint: string;
+}
+
+export interface GameContentCandidate {
+  id: string;
+  name: string;
+  rightsRecord: string;
+  approvalStatus: 'pending' | 'approved' | 'rejected';
 }

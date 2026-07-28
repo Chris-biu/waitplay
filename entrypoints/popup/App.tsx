@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { placeholderGames } from '@/src/games';
+import { getRecommendedGames } from '@/src/games';
 import type { AiDetection, AnalyticsEvent, Settings, WaitSession } from '@/src/types';
 import './style.css';
 
@@ -59,6 +59,7 @@ export function App() {
 
   const canStart = !session || session.status === 'ended';
   const showRecommendation = session?.status === 'recommendation_ready' && !session.recommendationDisabled;
+  const recommendedGames = getRecommendedGames(session?.thresholdSeconds ?? dashboard.settings.thresholdSeconds);
 
   return (
     <main>
@@ -83,7 +84,7 @@ export function App() {
         <section className="recommendation" aria-label="等待推荐">
           <h2>现在适合短暂休息</h2>
           <p>游戏不会自动打开；选择后将在独立标签页中启动。</p>
-          {placeholderGames.map((game) => (
+          {recommendedGames.map((game) => (
             <article className="game" key={game.id}>
               <div>
                 <strong>{game.name}</strong>
