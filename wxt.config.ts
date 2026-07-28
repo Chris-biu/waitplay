@@ -7,7 +7,7 @@ export default defineConfig({
     action: {
       default_title: 'Waitplay',
     },
+    permissions: ['alarms', 'notifications', 'storage', 'tabs'],
   },
   modules: ['@wxt-dev/module-react'],
 });
-
